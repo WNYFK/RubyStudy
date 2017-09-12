@@ -1,9 +1,10 @@
 require "./searchFiles"
+require "set"
 
 class SearchAllClasses
 	attr_accessor :allClasses
 	def initialize
-		@allClasses = Array.new
+		@allClasses = Set.new
 	end
 
 	def searchClasse
@@ -23,16 +24,19 @@ class SearchAllClasses
 	end
 
 	def getClasses(path)
-		classes = Array.new
+		classes = Set.new
 		File.open(path) { |io|
 			io.each { |line|
-				re = %r|@interface\s.+?(\s)|
-				# %r|^\s*@interface\s*([^(\s|:)]*)|
-				if line =~ re
-					classname = $1
-					if !classes.include?(classname)
-						classes.push(classname)
-					end
+				re_oc = %r|^\s*@interface\s*([^:]*)|
+				if line =~ re_oc
+					classname = $1.gsub(/\s+/, '').split('(')[0]
+					classes.add(classname)
+					next
+				end
+				re_swift = %r|^\s*class\s*([^:]*)|
+				if line =~ re_swift
+					classname = $1.gsub(/\s+/, '').split('{')[0]
+					classes.add(classname)
 				end
 			}
 			return classes

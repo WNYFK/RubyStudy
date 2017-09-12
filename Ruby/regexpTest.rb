@@ -1,7 +1,7 @@
-str = " @interface CBTestClass: NSObject"
-re = %r|^\s*@interface\s*(([^\s]|[^:])*)|
+str = " @interface CBTestClass() : NSObject"
+re = %r|^\s*@interface\s*(([^:])*)|
 
 re =~ str
-print $1, "\n"
+p $1.gsub(/\s+/, '').sub('(', '')
 p $2
 p $3
