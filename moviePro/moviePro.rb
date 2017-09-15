@@ -6,10 +6,9 @@ module MYP
   end
 
   class Base
-    def initialize(classnameRegexp, methodRegexp)
+    def initialize
       @classes = Array.new
-      @classnameRegexp = classnameRegexp
-      @methodRegexp = methodRegexp
+      @fileObjects = Array.new
     end
 
     def pop(name)
@@ -21,22 +20,21 @@ module MYP
   end
 
   class Swift < Base
-    def initialize
-      super(%r|^\s*class\s*([^:]*)|, %r|^\s*func|)
-    end
 
     def self.find
-      p MYP::Finder.find([".swift"])
+      swift = Swift.new
+      fileObjects = MYP::Finder.find([".swift"])
+      classes = fileObjects.map { |obj| obj.handleFile() }.flatten!
     end
   end
 
-  class ObjectiveC < Base
+  class Objc < Base
     def initialize
       super(%r|^\s*@interface\s*([^:]*)|, %r|^\s*-\(|)
     end
 
     def self.find
-      p MYP::Finder.find([".m"])
+      @classes = MYP::Finder.find([".m"]).handleFile()
     end
   end
 end

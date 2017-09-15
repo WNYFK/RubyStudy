@@ -23,7 +23,7 @@ module MYP
 
     def handleFile(path)
       if @extnames.include?(File.extname(path))
-        @fileObjects.push(FileObject.new(path))
+        @fileObjects.push(BaseFileObject.fileObjet(path))
       end
     end
 
