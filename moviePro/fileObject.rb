@@ -1,9 +1,10 @@
+require './classObject'
 module MYP
   class BaseFileObject
     def initialize(path, extname)
       @path = path
       @basename = File.basename(path, extname)
-      @classes = Array.new
+
     end
 
     def self.fileObjet(path)
@@ -28,13 +29,15 @@ module MYP
       classStartRegrexp = %r|^\s*class\s*([^:]*)|
       classEnd = false
       methodRegrexp = %r|^\s*func\s*|
+      classes = Array.new
       File.open(@path) do |io|
         io.each do |line|
-          if line =~ classnamaRegrexp
+          if line =~ classStartRegrexp #匹配到类名
             classname = $1.gsub(/\s+/, '').split('(')[0]
-            swiftClass = SwiftObject.new(classname)
-            @classes.push(swiftClass)
-          else if line =~ methodRegrexp
+            classes.push(SwiftObject.new(classname))
+          # else if line =~ methodRegrexp
+          #   methodname = $1.gsub(/\s+/, '').split('(')[0]
+          #   classes.last.addMethod(methodname)
           end
         end
       end
@@ -44,7 +47,26 @@ module MYP
 
   class ObjcFileObject < BaseFileObject
     def initialize(path)
-      super(path, %r|^\s*@interface\s*([^:]*)|, ".m")
+      super(path, ".m")
+    end
+
+    def handleFile
+      classStartRegrexp = %r|^\s*@implementation \s*([^(\n)]*)|
+      classEnd = false
+      methodRegrexp = %r|^\s*func\s*|
+      classes = Array.new
+      File.open(@path) do |io|
+        io.each do |line|
+          if line =~ classStartRegrexp #匹配到类名
+            classname = $1.gsub(/\s+/, '').split('(')[0]
+            classes.push(ObjcObject.new(classname))
+          # else if line =~ methodRegrexp
+          #   methodname = $1.gsub(/\s+/, '').split('(')[0]
+          #   classes.last.addMethod(methodname)
+          end
+        end
+      end
+      classes
     end
   end
 end
