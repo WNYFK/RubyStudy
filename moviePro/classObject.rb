@@ -1,9 +1,11 @@
 module MYP
   class BaseClassObject
-    def initialize(name)
+    attr_accessor :name
+    attr_accessor :path
+    def initialize(name, path)
       @methodlist = Array.new
       @name = name
-      @methodlist = Array.new
+      @path = path
     end
 
     def methodHand
@@ -18,6 +20,9 @@ module MYP
   end
 
   class ObjcObject < BaseClassObject
+    def initialize(name, path)
+      tmpPath = path.sub(/.h$/, '.m')
+      super(name, tmpPath)
+    end
   end
-
 end

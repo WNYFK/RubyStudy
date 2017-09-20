@@ -1,68 +1,46 @@
 require './classObject'
 module MYP
   class BaseFileObject
-    def initialize(path, extname)
-      @path = path
-      @basename = File.basename(path, extname)
-
-    end
-
-    def self.fileObjet(path)
+    def self.fileClasses(path)
       if File.extname(path) == ".swift"
-        SwiftFileObject.new(path)
+        SwiftFileObject.handleFile(path)
       else
-        ObjcFileObject.new(path)
+        ObjcFileObject.handleFile(path)
       end
     end
 
     # get classObject
-    def handleFile
+    def self.handleFile(path)
     end
   end
+end
 
-  class SwiftFileObject < BaseFileObject
-    def initialize(path)
-      super(path, ".swift")
-    end
-
-    def handleFile
-      classStartRegrexp = %r|^\s*class\s*([^:]*)|
-      classEnd = false
-      methodRegrexp = %r|^\s*func\s*|
-      classes = Array.new
-      File.open(@path) do |io|
-        io.each do |line|
-          if line =~ classStartRegrexp #匹配到类名
-            classname = $1.gsub(/\s+/, '').split('(')[0]
-            classes.push(SwiftObject.new(classname))
-          # else if line =~ methodRegrexp
-          #   methodname = $1.gsub(/\s+/, '').split('(')[0]
-          #   classes.last.addMethod(methodname)
+module MYP
+    class SwiftFileObject < BaseFileObject
+      def self.handleFile(path)
+        classnameRegrexp = /^[^(\s*\/*)]*\s*[a-zA-Z_]*\s*class\s+([^(func|var)][a-zA-Z0-9_]+)\s*[:<]?\s*.*{?/
+        classes = Array.new
+        File.open(path) do |io|
+          io.each do |line|
+            if line =~ classnameRegrexp #匹配到类名
+              classes.push(SwiftObject.new($1, @path))
+            end
           end
         end
+        classes
       end
-      classes
     end
-  end
+end
 
+module MYP
   class ObjcFileObject < BaseFileObject
-    def initialize(path)
-      super(path, ".m")
-    end
-
-    def handleFile
-      classStartRegrexp = %r|^\s*@implementation \s*([^(\n)]*)|
-      classEnd = false
-      methodRegrexp = %r|^\s*func\s*|
+    def self.handleFile(path)
+      classnameRegrexp = /^[^(\s*\/*)]*\s*@interface \s*([^:][a-zA-Z0-9_]+)\s*.*$/
       classes = Array.new
-      File.open(@path) do |io|
+      File.open(path) do |io|
         io.each do |line|
-          if line =~ classStartRegrexp #匹配到类名
-            classname = $1.gsub(/\s+/, '').split('(')[0]
-            classes.push(ObjcObject.new(classname))
-          # else if line =~ methodRegrexp
-          #   methodname = $1.gsub(/\s+/, '').split('(')[0]
-          #   classes.last.addMethod(methodname)
+          if line =~ classnameRegrexp #匹配到类名
+            classes.push(ObjcObject.new($1, path))
           end
         end
       end

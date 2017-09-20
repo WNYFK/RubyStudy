@@ -1,12 +1,13 @@
 require './fileObject'
+require 'set'
 module MYP
   class Finder
     def initialize(extnames)
-      @fileObjects = Array.new
+      @paths = Set.new
       @extnames = extnames
     end
 
-    def self.find(extnames = ['.swift', '.m'])
+    def self.find(extnames = ['.swift', '.m', '.h'])
       finder = Finder.new(extnames)
       finder.findFile(MYP::path)
     end
@@ -23,7 +24,7 @@ module MYP
 
     def handleFile(path)
       if @extnames.include?(File.extname(path))
-        @fileObjects.push(BaseFileObject.fileObjet(path))
+        @paths.add(path)
       end
     end
 
@@ -33,7 +34,7 @@ module MYP
       else
         handleFile(path)
       end
-      @fileObjects
+      @paths
     end
   end
 end
