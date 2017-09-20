@@ -17,7 +17,7 @@ module MYP
     @@path
   end
 
-  def self.find(extname, path)
+  def self.find(path)
     MYP::setProjectPath(path)
     @@swift = Swift.new(['.swift']).find
     @@objc = Objc.new(['.h', '.m']).find

@@ -1,5 +1,5 @@
 require './moviePro'
-MYP::find(ARGV[0] || "Swift", ARGV[1])
+MYP::find(ARGV[0])
 
 # classRegrexp = /\=?\s*MYPAdvertViewController\s*[.(?!,{]/
 # str = "        advertViewController = MYPAdvertViewController(cityId: 1, standId: MYPAdvertStand.boxOffice.rawValue)"
