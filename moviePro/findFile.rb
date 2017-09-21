@@ -7,9 +7,9 @@ module MYP
       @extnames = extnames
     end
 
-    def self.find(extnames = ['.swift', '.m', '.h'])
+    def self.find(extnames = ['.swift', '.m', '.h'], path = MYP::path)
       finder = Finder.new(extnames)
-      finder.findFile(MYP::path)
+      finder.findFile(path)
     end
 
     def handleDir(path)

@@ -66,3 +66,4 @@ module MYP
   class Objc < Base
   end
 end
+MYP::find(ARGV[0])
